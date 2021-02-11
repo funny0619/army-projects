@@ -2,29 +2,39 @@ window.onload = function() {
     setup();
 }
 var turn = 0;
+var winner;
 var square = document.getElementsByClassName("square");
 var button = document.getElementsByClassName("button")[0];
+var resultText = document.getElementsByClassName("result")[0];
 //turn starts at 0 if O starts
 //starts at 1 if X starts
 function setup() {
     for(let i=0; i<9; ++i) {
         square[i].addEventListener('click',function(e) {
-            var result;
             if(turn % 2 == 0) {
                 e.target.textContent = "O";
+                winner = "O"
             }
             else {
                 e.target.textContent = "X";
+                winner = "X"
             }
             e.target.style.pointerEvents = "none";
             e.target.style.color = "black";
             ++turn;
             result = end()
-            if(result == 1) {
+            if (result > 0) {
                 for(let i=0; i<9; ++i) {
                     square[i].style.pointerEvents = "none";
                 }
+                if(result == 1) {
+                    resultText.textContent = `"${winner}" won the game`;
+                }
+                else if(result == 2) {
+                    resultText.textContent = `It's a draw`
+                }
             }
+
         })
     }
     button.addEventListener('click',function(e) {
@@ -38,8 +48,10 @@ function reset() {
         square[i].textContent = "";
         square[i].removeAttribute("style");
     }
+    turn = 0;
 }
 // 1 is end
+// 2 is draw
 // find way to make win check better
 function end() {
     let one = document.getElementById("0").textContent
@@ -54,11 +66,14 @@ function end() {
     if((one == two && two == three) && (one && two && three) || (four == five && five == six) && (four && five && six) || (seven == eight && eight == nine) && (seven && eight && nine)) {
         return 1;
     }
-    if((one == four && four == seven) && (one && four && seven) || (two == five && five == eight) && (two && five && eight) || (three == six && six == nine) && (three && six && nine)) {
+    else if((one == four && four == seven) && (one && four && seven) || (two == five && five == eight) && (two && five && eight) || (three == six && six == nine) && (three && six && nine)) {
         return 1;
     }
-    if((one == five && five == nine) && (one && five && nine) || (three == five && five == seven) && (three && five && seven)) {
+    else if((one == five && five == nine) && (one && five && nine) || (three == five && five == seven) && (three && five && seven)) {
         return 1;
     }
-    return 0
+    else if (one && two && three && four && five && six && seven && eight && nine) {
+        return 2;
+    }
+    return 0;
 }

@@ -1,11 +1,15 @@
 window.onload = function() {
     setup();
 }
-var turn = 0;
+var Xwin = 0;
+var Owin = 0;
+var turn = 1;
 var winner;
 var square = document.getElementsByClassName("square");
 var button = document.getElementsByClassName("button")[0];
 var resultText = document.getElementsByClassName("result")[0];
+var XwinCount = document.getElementById("Xwin");
+var OwinCount = document.getElementById("Owin");
 //turn starts at 0 if O starts
 //starts at 1 if X starts
 function setup() {
@@ -29,12 +33,13 @@ function setup() {
                 }
                 if(result == 1) {
                     resultText.textContent = `"${winner}" won the game`;
+                    if(winner == "X") ++Xwin;
+                    else ++Owin;
                 }
-                else if(result == 2) {
-                    resultText.textContent = `It's a draw`
-                }
+                else if(result == 2) resultText.textContent = "It's a draw"
+                OwinCount.textContent =  Owin
+                XwinCount.textContent =  Xwin
             }
-
         })
     }
     button.addEventListener('click',function(e) {
@@ -48,7 +53,8 @@ function reset() {
         square[i].textContent = "";
         square[i].removeAttribute("style");
     }
-    turn = 0;
+    turn = 1;
+    resultText.textContent = "";
 }
 // 1 is end
 // 2 is draw

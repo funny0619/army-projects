@@ -7,10 +7,20 @@
     font-size: 30px;
     color: transparent;
 }
-.chooseData{
+.resultData {
+    text-align: center;
+    vertical-align: middle;
+}
+.chooseData {
     border: 1px solid black;
-    width: 50px;
+    width: 79px;
     height: 20px;
     text-align: center;
     vertical-align: middle;
+}
+/* #x {
+    box-shadow: 1px 1px 1px;
+} */
+.chooseData:hover {
+    box-shadow: 1px 1px 1px;
 }

@@ -45,7 +45,6 @@ function setup() {
     button.addEventListener('click',function(e) {
         reset()
     })
-    
 };
 
 function reset() {
@@ -82,4 +81,24 @@ function end() {
         return 2;
     }
     return 0;
+}
+
+board = [
+    [0,0,0],
+    [0,0,0],
+    [0,0,0],
+]
+function endBoard() {
+
+}
+function calculateUtility(board) {
+
+}
+function maximize(board, depth) {
+    if(endBoard() || depth) {
+        return null, calculateUtility(board)
+    } 
+    max_utility = -99
+    move = null
+    for 
 }

@@ -1,6 +1,11 @@
 window.onload = function() {
     setup();
 }
+var gameboard = [
+    [0,0,0],
+    [0,0,0],
+    [0,0,0],
+]
 var Xwin = 0;
 var Owin = 0;
 var turn = 1;
@@ -83,22 +88,107 @@ function end() {
     return 0;
 }
 
-board = [
-    [0,0,0],
-    [0,0,0],
-    [0,0,0],
-]
+function copyBoard(board) {
+    var copiedBoard = [
+        [0,0,0],
+        [0,0,0],
+        [0,0,0],
+    ]
+    for(let i=0; i<3; ++i) {
+        for(let j=0; j<3; ++j) {
+            board[i][j] = copiedBoard[i][j]
+        }
+    }
+    return copiedBoard
+}
+//if player1 then
+function listAllPossibleMoves(board,sign){
+    boards = []
+    for(let i=0; i<3; ++i) {
+        for(let j=0; j<3; ++j) {
+            if(board[i][j] == 0) {
+                let newBoard = copyBoard(board)
+                newBoard[i][j] = sign
+                boards.push(newBoard)
+            }
+        }
+    }
+    return boards
+}
+
 function endBoard() {
 
 }
-function calculateUtility(board) {
-
+//1 is x
+//5 is o
+//evalulate terminal position of minmax tree
+// too many copied code could be improved
+function calculateUtility(board,sign) {
+    let sum = 0
+    //check horizontal
+    for(let i=0; i<3; ++i) {
+        for(let j=0; j<3; ++i) {
+            sum += board[i][j]
+        }
+        if(sum % 3 && sum > 0) {
+            if(sum > 3) {
+                if(sign == 5) return 10
+                else return -10
+            }
+            else {
+                if(sign == 5) return -10
+                else return 10
+            }
+        }
+        sum = 0
+    }
+    //check vertical
+    for(let j=0; j<3; ++j) {
+        for(let i=0; i<3; ++i) {
+            sum += board[i][j]
+        }
+        if(sum % 3 && sum > 0) {
+            if(sum > 3) {
+                if(sign == 5) return 10
+                else return -10
+            }
+            else {
+                if(sign == 5) return -10
+                else return 10
+            }
+        }
+        sum = 0
+    }
+    //check diagonals
+    sum = board[0][0] + board[1][1] + board[2][2]
+    if(sum % 3 && sum > 0) {
+        if(sum > 3) {
+            if(sign == 5) return 10
+            else return -10
+        }
+        else {
+            if(sign == 5) return -10
+            else return 10
+        }
+    }
+    sum = board[0][2] + board[1][1] + board[2][0]
+    if(sum % 3 && sum > 0) {
+        if(sum > 3) {
+            if(sign == 5) return 10
+            else return -10
+        }
+        else {
+            if(sign == 5) return -10
+            else return 10
+        }
+    }
 }
-// function maximize(board, depth) {
-//     if(endBoard() || depth) {
-//         return null, calculateUtility(board)
-//     } 
-//     max_utility = -99
-//     move = null
-//     for 
-// }
+
+function maximize(board) {
+    // if terminal condition or maximum depth reached
+    if(endBoard()) {
+        return null, calculateUtility(board)
+    } 
+    max_utility = -99
+    move = null
+}

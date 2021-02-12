@@ -101,7 +101,7 @@ function copyBoard(board) {
     }
     return copiedBoard
 }
-//if player1 then
+
 function listAllPossibleMoves(board,sign){
     boards = []
     for(let i=0; i<3; ++i) {
@@ -116,30 +116,18 @@ function listAllPossibleMoves(board,sign){
     return boards
 }
 
-function endBoard() {
-
-}
 //1 is x
 //5 is o
-//evalulate terminal position of minmax tree
+// returns if game ended and winner (1 or 5)
 // too many copied code could be improved
-function calculateUtility(board,sign) {
-    let sum = 0
+function endBoard(board) {
+    let end = False
     //check horizontal
     for(let i=0; i<3; ++i) {
         for(let j=0; j<3; ++i) {
             sum += board[i][j]
         }
-        if(sum % 3 && sum > 0) {
-            if(sum > 3) {
-                if(sign == 5) return 10
-                else return -10
-            }
-            else {
-                if(sign == 5) return -10
-                else return 10
-            }
-        }
+        if(sum % 3 && sum > 0) return [true,sum/3]
         sum = 0
     }
     //check vertical
@@ -147,48 +135,47 @@ function calculateUtility(board,sign) {
         for(let i=0; i<3; ++i) {
             sum += board[i][j]
         }
-        if(sum % 3 && sum > 0) {
-            if(sum > 3) {
-                if(sign == 5) return 10
-                else return -10
-            }
-            else {
-                if(sign == 5) return -10
-                else return 10
-            }
-        }
+        if(sum % 3 && sum > 0) return [true,sum/3]
         sum = 0
     }
-    //check diagonals
+    //check diagonal
     sum = board[0][0] + board[1][1] + board[2][2]
-    if(sum % 3 && sum > 0) {
-        if(sum > 3) {
-            if(sign == 5) return 10
-            else return -10
-        }
-        else {
-            if(sign == 5) return -10
-            else return 10
-        }
-    }
+    if(sum % 3 && sum > 0) return [true,sum/3]
+    sum = 0
     sum = board[0][2] + board[1][1] + board[2][0]
-    if(sum % 3 && sum > 0) {
-        if(sum > 3) {
-            if(sign == 5) return 10
-            else return -10
-        }
-        else {
-            if(sign == 5) return -10
-            else return 10
+    if(sum % 3 && sum > 0) return [true,sum/3]
+
+    //check if draw
+    let count = 0
+    for(let i=0; i<3; ++i) {
+        for(let j=0; j<3; ++j) {
+            if(board[i][j] == 0) ++count            
         }
     }
+    if(count == 0 && sum % 3 != 0) {
+        end = true
+    }
+
+    return [end,sum/3]
+}
+//1 is x
+//5 is o
+//evalulate terminal position of minmax tree
+function calculateUtility(value,sign) {
+    if(value == sign) return 10
+    else if (value == 0) return 0
+    else return -10
 }
 
-function maximize(board) {
+//return move state and utility
+function maximize(board,sign) {
+    let utility;
     // if terminal condition or maximum depth reached
-    if(endBoard()) {
-        return null, calculateUtility(board)
-    } 
-    max_utility = -99
-    move = null
+    endGame = endBoard(board)
+    if(endGame[0]) {
+        utility = calculateUtility(endGame[1],sign)
+        return [board,utility]
+    }
+    boards = listAllPossibleMoves(board,sign)
+    //what do i do from here?
 }

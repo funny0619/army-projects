@@ -161,6 +161,8 @@ function endBoard(board) {
 //1 is x
 //5 is o
 //evalulate terminal position of minmax tree
+//value denotes which player won 5 or 1
+//sign denotes if cpu is O or X
 function calculateUtility(value,sign) {
     if(value == sign) return 10
     else if (value == 0) return 0
@@ -168,14 +170,13 @@ function calculateUtility(value,sign) {
 }
 
 //return move state and utility
-function maximize(board,sign) {
-    let utility;
-    // if terminal condition or maximum depth reached
+function minimax(board,sign,maximizingPlayer) {
     endGame = endBoard(board)
-    if(endGame[0]) {
-        utility = calculateUtility(endGame[1],sign)
-        return [board,utility]
+    if(endGame[0]){
+        return calculateUtility(endGame[1],sign)
     }
-    boards = listAllPossibleMoves(board,sign)
-    //what do i do from here?
+    //check if it is the turn of the maxmimizing player
+    if(maximizingPlayer) {
+
+    }
 }

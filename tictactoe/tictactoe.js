@@ -2,10 +2,11 @@ window.onload = function() {
     setup();
 }
 var gameboard = [
-    [1,5,0],
-    [1,5,0],
-    [0,0,0],
+    ["O","X","O"],
+    ["X",0,"O"],
+    ["O","X","X"],
 ]
+var player = "O"
 var Xwin = 0;
 var Owin = 0;
 var turn = 1;
@@ -50,7 +51,8 @@ function setup() {
     button.addEventListener('click',function(e) {
         reset()
     })
-    console.log(minimax(gameboard,1,true))
+    console.log(minimax(gameboard,"O",true))
+    // console.log(listAllPossibleMoves(gameboard,"X"))
 };
 
 function reset() {
@@ -97,19 +99,19 @@ function copyBoard(board) {
     ]
     for(let i=0; i<3; ++i) {
         for(let j=0; j<3; ++j) {
-            board[i][j] = copiedBoard[i][j]
+            copiedBoard[i][j] = board[i][j]
         }
     }
     return copiedBoard
 }
 
-function listAllPossibleMoves(board,sign){
+function listAllPossibleMoves(board,turn){
     boards = []
     for(let i=0; i<3; ++i) {
         for(let j=0; j<3; ++j) {
             if(board[i][j] == 0) {
                 let newBoard = copyBoard(board)
-                newBoard[i][j] = sign
+                newBoard[i][j] = turn
                 boards.push(newBoard)
             }
         }
@@ -117,35 +119,31 @@ function listAllPossibleMoves(board,sign){
     return boards
 }
 
-//1 is x
-//5 is o
 // returns if game ended and winner (1 or 5)
 // too many copied code could be improved
 function endBoard(board) {
     let end = false
-    let sum = 0;
     //check horizontal
     for(var i=0; i<3; ++i) {
-        for(var j=0; j<3; ++j) {
-            sum += board[i][j]
+        if(board[i][0] == board[i][1] && board[i][1] == board[i][2] && board[i][0] != 0) {
+            return [true,board[i][0]]
         }
-        if(sum % 3 == 0 && sum > 0) return [true,sum/3]
-        sum = 0
     }
+
     //check vertical
     for(var j=0; j<3; ++j) {
-        for(var i=0; i<3; ++i) {
-            sum += board[i][j]
+        if(board[0][j] == board[1][j] && board[1][j] == board[2][j] && board[0][j] != 0) {
+            return [true,board[0][j]]
         }
-        if(sum % 3 == 0 && sum > 0) return [true,sum/3]
-        sum = 0
     }
+
     //check diagonal
-    sum = board[0][0] + board[1][1] + board[2][2]
-    if(sum % 3 == 0 && sum > 0) return [true,sum/3]
-    sum = 0
-    sum = board[0][2] + board[1][1] + board[2][0]
-    if(sum % 3 == 0 && sum > 0) return [true,sum/3]
+    if(board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[1][1 != 0]) {
+        return [true,board[1][1]]
+    }
+    if(board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[1][1] != 0) {
+        return [true,board[1][1]]
+    }
 
     //check if draw
     let count = 0
@@ -154,50 +152,50 @@ function endBoard(board) {
             if(board[i][j] == 0) ++count            
         }
     }
-    if(count == 0 && sum % 3 != 0) {
+    if(count == 0) {
         end = true
     }
 
-    return [end,sum/3]
+    return [end,0]
 }
 //1 is x
 //5 is o
 //evalulate terminal position of minmax tree
-//value denotes which player won 5 or 1
-//sign denotes if cpu is O or X
-function calculateUtility(value,sign) {
-    if(value == sign) return 10
-    else if (value == 0) return 0
+function calculateUtility(winner,player) {
+    if(winner == player) return 10
+    else if (winner == 0) return 0
     else return -10
 }
 
 //return move state and utility
-function minimax(board,sign,maximizingPlayer) {
+function minimax(board,turn,maximizingPlayer) {
     let endGame = endBoard(board)
-    let oSign;
-    if (sign == 1) oSign = 5;
-    else oSign = 1
+    console.log(board)
     console.log(endGame)
+    let oTurn;
+    if(turn = "X") oTurn = "O"
+    else oTurn = "X"
     if(endGame[0]){
-        return calculateUtility(endGame[1],sign)
+        return calculateUtility(endGame[1])
     }
     //check if it is the turn of the maxmimizing player
     if(maximizingPlayer) {
         maxEval = -9999
-        children = listAllPossibleMoves(board,sign)
+        children = listAllPossibleMoves(board,turn)
+        // console.log(children)
         length = children.length
         for(let i=0; i<length; ++i) {
-            let eval = minimax(boards[i],oSign,false)
+            let eval = minimax(boards[i],"O",false)
             maxEval = Math.max(maxEval,eval)
         }
         return maxEval
     }
     else {
         minEval = 9999
-        children = listAllPossibleMoves(board,oSign)
+        children = listAllPossibleMoves(board,turn)
         length = children.length
         for(let i=0; i<length; ++i) {
-            let eval = minimax(boards[i],sign,true)
+            let eval = minimax(boards[i],"O",true)
             minEval = Math.min(minEval,eval)
         }
         return minEval

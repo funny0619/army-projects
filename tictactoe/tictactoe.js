@@ -2,11 +2,14 @@ window.onload = function() {
     setup();
 }
 var gameboard = [
-    ["O","X","O"],
-    ["X",0,"O"],
-    ["O","X","X"],
+    [0,0,0],
+    [0,0,0],
+    [0,0,0],
 ]
-var player = "O"
+var player = "X"
+var oPlayer;
+if(player == "X") oPlayer = "O"
+else oPlayer = "X"
 var Xwin = 0;
 var Owin = 0;
 var turn = 1;
@@ -18,48 +21,54 @@ var XwinCount = document.getElementById("Xwin");
 var OwinCount = document.getElementById("Owin");
 //turn starts at 0 if O starts
 //starts at 1 if X starts
-function setup() {
-    for(let i=0; i<9; ++i) {
-        square[i].addEventListener('click',function(e) {
-            if(turn % 2 == 0) {
-                e.target.textContent = "O";
-                winner = "O"
+function draw() {
+    for(let i=0; i<3; ++i) {
+        for(let j=0; j<3; ++j) {
+            if(gameboard[i][j] != 0) {
+                square[i*3 + j].textContent = gameboard[i][j]
+                square[i*3 + j].style.pointerEvents = "none";
             }
             else {
-                e.target.textContent = "X";
-                winner = "X"
+                square[i*3 + j].textContent = ""
             }
-            e.target.style.pointerEvents = "none";
-            e.target.style.color = "black";
-            ++turn;
-            result = end()
-            if (result > 0) {
-                for(let i=0; i<9; ++i) {
-                    square[i].style.pointerEvents = "none";
-                }
-                if(result == 1) {
-                    resultText.textContent = `"${winner}" won the game`;
-                    if(winner == "X") ++Xwin;
-                    else ++Owin;
-                }
-                else if(result == 2) resultText.textContent = "It's a draw"
-                OwinCount.textContent =  Owin
-                XwinCount.textContent =  Xwin
-            }
-        })
+        }
     }
+}
+function setup() {
+    gameboard = copyBoard(findBestMove(gameboard))
+    draw()
+    for(let i=0; i<3; ++i) {
+        for(let j=0; j<3; ++j) {
+            square[i*3 + j].addEventListener('click',function(e) {
+                gameboard[i][j] = oPlayer;
+                draw()
+                gameboard = copyBoard(findBestMove(gameboard))
+                draw()
+            })
+        }
+    }
+    draw()
     button.addEventListener('click',function(e) {
         reset()
     })
-    console.log(minimax(gameboard,"O",true))
-    // console.log(listAllPossibleMoves(gameboard,"X"))
+    // console.log(findBestMove(gameboard))
+    // console.log(minimax(gameboard,player,true))
 };
 
+// function game() {
+//     gameboard = copyBoard(findBestMove(gameboard))
+//     draw()
+// }
+
 function reset() {
-    for(let i=0; i<9;++i) {
-        square[i].textContent = "";
-        square[i].removeAttribute("style");
+    for(let i=0; i<3; ++i) {
+        for(let j=0; j<3; ++j) {
+            gameboard[i][j] = 0
+            square[i*3 + j].removeAttribute("style");
+        }
     }
+    gameboard = copyBoard(findBestMove(gameboard))
+    draw()
     turn = 1;
     resultText.textContent = "";
 }
@@ -106,7 +115,8 @@ function copyBoard(board) {
 }
 
 function listAllPossibleMoves(board,turn){
-    boards = []
+    // console.log(turn)
+    var boards = []
     for(let i=0; i<3; ++i) {
         for(let j=0; j<3; ++j) {
             if(board[i][j] == 0) {
@@ -138,7 +148,7 @@ function endBoard(board) {
     }
 
     //check diagonal
-    if(board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[1][1 != 0]) {
+    if(board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[1][1] != 0) {
         return [true,board[1][1]]
     }
     if(board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[1][1] != 0) {
@@ -158,46 +168,61 @@ function endBoard(board) {
 
     return [end,0]
 }
-//1 is x
-//5 is o
+
 //evalulate terminal position of minmax tree
-function calculateUtility(winner,player) {
-    if(winner == player) return 10
+function calculateUtility(winner) {
+    // console.log(winner)
+    if(winner == player) return 1
     else if (winner == 0) return 0
-    else return -10
+    else return -1
 }
 
 //return move state and utility
-function minimax(board,turn,maximizingPlayer) {
+function minimax(board,maximizingPlayer) {
     let endGame = endBoard(board)
-    console.log(board)
-    console.log(endGame)
-    let oTurn;
-    if(turn = "X") oTurn = "O"
-    else oTurn = "X"
+    // console.log(endGame)
+    // console.log(board)
     if(endGame[0]){
+        // console.log(board,endGame[1],calculateUtility(endGame[1]))
         return calculateUtility(endGame[1])
     }
     //check if it is the turn of the maxmimizing player
     if(maximizingPlayer) {
-        maxEval = -9999
-        children = listAllPossibleMoves(board,turn)
-        // console.log(children)
-        length = children.length
+        let maxEval = -9999
+        let children = listAllPossibleMoves(board,player)
+        // console.log(children,player)
+        let length = children.length
         for(let i=0; i<length; ++i) {
-            let eval = minimax(boards[i],"O",false)
+            let eval = minimax(children[i],false)
             maxEval = Math.max(maxEval,eval)
         }
         return maxEval
     }
     else {
-        minEval = 9999
-        children = listAllPossibleMoves(board,turn)
-        length = children.length
+        let minEval = 9999
+        let children = listAllPossibleMoves(board,oPlayer)
+        // console.log(children,oPlayer)
+        let length = children.length
         for(let i=0; i<length; ++i) {
-            let eval = minimax(boards[i],"O",true)
+            let eval = minimax(children[i],true)
             minEval = Math.min(minEval,eval)
         }
         return minEval
     }
+}
+
+function findBestMove(board) {
+    let bestScore = -Infinity
+    let bestIndex = -1
+    let moves = listAllPossibleMoves(board,player)
+    let length = moves.length
+    for(let i=0; i<length; ++i) {
+        //from AI POV the next move is not the maxmizing player
+        let score = minimax(moves[i],false)
+        if(score > bestScore) {
+            bestScore = score
+            bestIndex = i
+        }
+    }
+    return moves[bestIndex]
 }

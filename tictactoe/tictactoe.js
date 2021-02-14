@@ -13,7 +13,6 @@ else oPlayer = "X"
 var Xwin = 0;
 var Owin = 0;
 var turn = 1;
-var winner;
 var square = document.getElementsByClassName("square");
 var button = document.getElementsByClassName("button")[0];
 var resultText = document.getElementsByClassName("result")[0];
@@ -33,9 +32,23 @@ function draw() {
             }
         }
     }
+    endGame = endBoard(gameboard)
+    if(endGame[0]) {
+        if(endGame[1] == 0) resultText.textContent = "It's a draw!"
+        else {
+            resultText.textContent = `${endGame[1]} is the winner!`
+            if(endGame[1] == "X") XwinCount.textContent = ++Xwin
+            else OwinCount.textContent = ++Owin
+        }
+        for(let i=0; i<9; ++i) {
+            square[i].style.pointerEvents = "none"
+        }
+    }
 }
 function setup() {
-    gameboard = copyBoard(findBestMove(gameboard))
+    let row = Math.floor(Math.random() * 3)
+    let column = Math.floor(Math.random() * 3)
+    gameboard[row][column] = "X"
     draw()
     for(let i=0; i<3; ++i) {
         for(let j=0; j<3; ++j) {
@@ -51,14 +64,7 @@ function setup() {
     button.addEventListener('click',function(e) {
         reset()
     })
-    // console.log(findBestMove(gameboard))
-    // console.log(minimax(gameboard,player,true))
 };
-
-// function game() {
-//     gameboard = copyBoard(findBestMove(gameboard))
-//     draw()
-// }
 
 function reset() {
     for(let i=0; i<3; ++i) {
@@ -67,37 +73,12 @@ function reset() {
             square[i*3 + j].removeAttribute("style");
         }
     }
-    gameboard = copyBoard(findBestMove(gameboard))
+    let row = Math.floor(Math.random() * 3)
+    let column = Math.floor(Math.random() * 3)
+    gameboard[row][column] = "X"
     draw()
     turn = 1;
     resultText.textContent = "";
-}
-// 1 is end
-// 2 is draw
-// find way to make win check better
-function end() {
-    let one = document.getElementById("0").textContent
-    let two = document.getElementById("1").textContent
-    let three = document.getElementById("2").textContent
-    let four = document.getElementById("3").textContent
-    let five = document.getElementById("4").textContent
-    let six = document.getElementById("5").textContent
-    let seven = document.getElementById("6").textContent
-    let eight = document.getElementById("7").textContent
-    let nine = document.getElementById("8").textContent
-    if((one == two && two == three) && (one && two && three) || (four == five && five == six) && (four && five && six) || (seven == eight && eight == nine) && (seven && eight && nine)) {
-        return 1;
-    }
-    else if((one == four && four == seven) && (one && four && seven) || (two == five && five == eight) && (two && five && eight) || (three == six && six == nine) && (three && six && nine)) {
-        return 1;
-    }
-    else if((one == five && five == nine) && (one && five && nine) || (three == five && five == seven) && (three && five && seven)) {
-        return 1;
-    }
-    else if (one && two && three && four && five && six && seven && eight && nine) {
-        return 2;
-    }
-    return 0;
 }
 
 function copyBoard(board) {

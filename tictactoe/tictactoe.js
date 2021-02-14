@@ -1,3 +1,8 @@
+//todo
+//optimize code
+//have users choose O or X
+//have users choose to play against friend or CPU
+//make the website prettier?
 window.onload = function() {
     setup();
 }

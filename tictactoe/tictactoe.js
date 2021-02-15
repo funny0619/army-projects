@@ -53,19 +53,17 @@ function draw() {
 function setup() {
     let row = Math.floor(Math.random() * 3)
     let column = Math.floor(Math.random() * 3)
-    gameboard[row][column] = "X"
+    gameboard[row][column] = player
     draw()
     for(let i=0; i<3; ++i) {
         for(let j=0; j<3; ++j) {
             square[i*3 + j].addEventListener('click',function(e) {
                 gameboard[i][j] = oPlayer;
-                draw()
                 gameboard = copyBoard(findBestMove(gameboard))
                 draw()
             })
         }
     }
-    draw()
     button.addEventListener('click',function(e) {
         reset()
     })
